@@ -1,11 +1,14 @@
 package com.blogapp.data.models;
 
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -34,7 +37,15 @@ public class Post {
     @UpdateTimestamp
     private LocalDate dateModified;
 
-    @OneToMany
+    @ToString.Exclude
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comments;
 
+    public void addComments(Comment... comment)
+    {
+        if(comments == null) {
+            comments = new ArrayList<>();
+        }
+        comments.addAll(Arrays.asList(comment));
+    }
 }

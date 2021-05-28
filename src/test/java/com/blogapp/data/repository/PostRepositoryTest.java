@@ -1,6 +1,7 @@
 package com.blogapp.data.repository;
 
 import com.blogapp.data.models.Author;
+import com.blogapp.data.models.Comment;
 import com.blogapp.data.models.Post;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,8 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -28,7 +31,7 @@ class PostRepositoryTest {
     }
 
     @Test
-    void save()
+    void savePost()
     {
         Post post = new Post();
         post.setTitle("What is Fintech?");
@@ -81,9 +84,96 @@ class PostRepositoryTest {
     }
 
     @Test
-    void findAllPosts() {
+    void findAllPosts()
+    {
         List<Post> posts = postRepository.findAll();
         assertThat(posts).isNotNull();
         assertThat(posts).hasSize(5);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    void deletePostById()
+    {
+        Post savedPost = postRepository.findById(41).orElse(null);
+        assertThat(savedPost).isNotNull();
+        log.info("Post fetched from the database --> {}", savedPost);
+        //delete post
+        postRepository.deleteById(savedPost.getId());
+
+        Post deletedPost = postRepository.findById(savedPost.getId()).orElse(null);
+        assertThat(deletedPost).isNull();
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    void updatePostAuthor()
+    {
+        Post savedPost = postRepository.findById(41).orElse(null);
+        assertThat(savedPost).isNotNull();
+        assertThat(savedPost.getAuthor()).isNull();
+        log.info("Post fetched from the database --> {}", savedPost);
+
+        //update post
+        Author author = new Author();
+        author.setFirstname("Ayo");
+        author.setLastname("Dele");
+        author.setEmail("ayo@dele.com");
+        author.setPhoneNumber("12345678901");
+
+        //map relationships
+        savedPost.setAuthor(author);
+        author.addPost(savedPost);
+
+        postRepository.save(savedPost);
+        log.info("Blog post After saving --> {}", savedPost);
+
+        Post updatedPost = postRepository.findById(savedPost.getId()).orElse(null);
+        assertThat(updatedPost).isNotNull();
+        assertThat(updatedPost.getAuthor()).isNotNull();
+        assertThat(updatedPost.getAuthor()).isEqualTo(author);
+    }
+
+    @Test
+    void updateSavedPostTitle()
+    {
+        Post savedPost = postRepository.findById(41).orElse(null);
+        assertThat(savedPost).isNotNull();
+        assertThat(savedPost.getTitle()).isEqualTo("Title post 1");
+        log.info("Post fetched from the database --> {}", savedPost);
+
+        //update post
+        savedPost.setTitle("Pentax Post title");
+        postRepository.save(savedPost);
+
+        Post updatedPost = postRepository.findById(savedPost.getId()).orElse(null);
+        assertThat(updatedPost).isNotNull();
+        assertThat(updatedPost.getTitle()).isEqualTo("Pentax Post title");
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    void addCommentToExistingPost()
+    {
+        Post savedPost = postRepository.findById(41).orElse(null);
+        assertThat(savedPost).isNotNull();
+        assertThat(savedPost.getComments()).isEmpty();
+        log.info("Post fetched from the database --> {}", savedPost);
+
+        Comment comment1 = new Comment("Onye Lafta", "HeheHahaHoHo");
+        Comment comment2 = new Comment("Anada Onye Lafta", "Ngburugburugburu");
+
+        savedPost.addComments(comment1, comment2);
+        postRepository.save(savedPost);
+
+        Post updatedPost = postRepository.findById(savedPost.getId()).orElse(null);
+        assertThat(updatedPost).isNotNull();
+        assertThat(updatedPost.getComments()).isNotNull();
+        assertThat(updatedPost.getComments()).hasSize(2);
+
+        log.info("Updated Post from the database --> {}", updatedPost);
     }
 }
