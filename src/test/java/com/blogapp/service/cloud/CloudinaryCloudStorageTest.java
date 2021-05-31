@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -29,7 +30,11 @@ class CloudinaryCloudStorageTest {
     void uploadImage()
     {
         File file = new File("/home/ayodele/Pictures/asa.jpeg");
+
+        assertThat(file.exists()).isTrue();
+
         Map<Object, Object> params = new HashMap();
+        params.put("public_id", "asa_profile");
         params.put("folder", "blogapp");
         params.put("overwrite", "true");
 
