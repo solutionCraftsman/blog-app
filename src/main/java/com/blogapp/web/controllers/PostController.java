@@ -1,33 +1,40 @@
 package com.blogapp.web.controllers;
 
 import com.blogapp.service.post.PostService;
+import com.blogapp.web.dto.PostDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
+@RequestMapping("/posts")
 public class PostController {
 
     @Autowired
     PostService postService;
 
-    @GetMapping("/posts")
+    @GetMapping("")
     public String getIndex() {
         return "index";
     }
 
-    @GetMapping ("/post/create")
-    public String getPostForm() {
+    @GetMapping ("/create")
+    public String getPostForm(Model model)
+    {
+        model.addAttribute("postDto", new PostDto());
         return "create";
     }
 
-    @PostMapping("/post")
-    public String savePost() {
-
-        return null;
+    @PostMapping("/save")
+    public String savePost(@ModelAttribute @Valid PostDto postDto)
+    {
+        log.info("Post dto received --> {}", postDto);
+        return "index";
     }
 
 }
