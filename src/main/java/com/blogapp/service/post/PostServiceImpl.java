@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.List;
 
@@ -20,7 +19,8 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
 
     @Override
-    public Post savePost(PostDto postDto) {
+    public Post savePost(PostDto postDto)
+    {
         Post post = new Post();
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.map(postDto, post);
