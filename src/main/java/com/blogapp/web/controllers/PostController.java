@@ -34,13 +34,13 @@ public class PostController {
     @GetMapping ("/create")
     public String getPostForm(Model model)
     {
-        model.addAttribute("postDto", new PostDto());
+        //model.addAttribute("postDto", new PostDto());
         model.addAttribute("error", false);
         return "create";
     }
 
     @PostMapping("/save")
-    public String savePost(@ModelAttribute @Valid PostDto postDto, Model model)
+    public String savePost(@ModelAttribute("postDto") @Valid PostDto postDto, Model model)
     {
         log.info("Post dto received --> {}", postDto);
 
@@ -56,12 +56,18 @@ public class PostController {
             log.info("Constraint Exception occurred --> {}", exception.getMessage());
             model.addAttribute("error", true);
             model.addAttribute("errorMessage", exception.getMessage());
-            model.addAttribute("postDto", postDto);
+            //model.addAttribute("postDto", postDto);
 
             return "create";
         }
 
         return "redirect:/posts";
+    }
+
+    @ModelAttribute
+    public void createPostModel(Model model)
+    {
+        model.addAttribute("postDto", new PostDto());
     }
 
 }
