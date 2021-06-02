@@ -10,6 +10,7 @@ import com.cloudinary.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -34,9 +35,11 @@ public class PostServiceImpl implements PostService {
             throw new PostObjectIsNullException("Post cannot be null");
         }
 
+        log.info("Post DTO --> {}", postDto);
+
         Post post = new Post();
 
-        if(postDto.getImageFile() != null) {
+        if(postDto.getImageFile() != null && !postDto.getImageFile().isEmpty()) {
             try {
                 Map<?, ?> uploadResponse = cloudStorageService.uploadImage(postDto.getImageFile(), ObjectUtils.asMap(
                         "folder", "blogapp",
@@ -62,7 +65,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> findAllPosts() {
-        return null;
+        return postRepository.findAll();
     }
 
     @Override

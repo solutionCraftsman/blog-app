@@ -32,6 +32,10 @@
             <input class="form-control" th:field="*{imageFile}" type="file" id="formFile">
         </div>
 
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
         <label for="text" class="form-label"></label>
         <input type="text" name="text" id="text" th:field="*{title}" placeholder="Enter Post Title">
 
