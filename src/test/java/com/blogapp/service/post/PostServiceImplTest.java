@@ -3,13 +3,13 @@ package com.blogapp.service.post;
 import com.blogapp.data.models.Post;
 import com.blogapp.data.repository.PostRepository;
 import com.blogapp.web.dto.PostDto;
+import com.blogapp.web.exceptions.PostObjectIsNullException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class PostServiceImplTest {
@@ -29,7 +29,7 @@ class PostServiceImplTest {
     }
 
     @Test
-    void whenTheSaveMethodIsCalled_thenRepositoryIsCalledOnce() {
+    void whenTheSaveMethodIsCalled_thenRepositoryIsCalledOnce() throws PostObjectIsNullException {
         when(postServiceImpl.savePost(new PostDto())).thenReturn(testPost);
         postServiceImpl.savePost(new PostDto());
 
