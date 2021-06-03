@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -40,9 +41,13 @@ public class PostController {
     }
 
     @PostMapping("/save")
-    public String savePost(@ModelAttribute("postDto") @Valid PostDto postDto, Model model)
+    public String savePost(@ModelAttribute("postDto") @Valid PostDto postDto, BindingResult result, Model model)
     {
         log.info("Post dto received --> {}", postDto);
+
+        if(result.hasErrors()) {
+            return "create";
+        }
 
         try {
             postService.savePost(postDto);
@@ -55,7 +60,7 @@ public class PostController {
         {
             log.info("Constraint Exception occurred --> {}", exception.getMessage());
             model.addAttribute("error", true);
-            model.addAttribute("errorMessage", exception.getMessage());
+            model.addAttribute("errorMessage", "Title Not Accepted, Already Exists!");
             //model.addAttribute("postDto", postDto);
 
             return "create";

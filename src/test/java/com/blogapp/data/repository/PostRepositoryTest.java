@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Slf4j
@@ -179,5 +180,21 @@ class PostRepositoryTest {
         assertThat(updatedPost.getComments()).hasSize(2);
 
         log.info("Updated Post from the database --> {}", updatedPost);
+    }
+
+    @Test
+    void findAllPostInDescendingOrder()
+    {
+        List<Post> allPosts = postRepository.findByOrderByDateCreatedDesc();
+
+        assertThat(allPosts).isNotEmpty();
+        log.info("All posts --> {}", allPosts);
+
+        assertTrue(allPosts.get(0).getDateCreated().
+                isAfter(allPosts.get(1).getDateCreated()));
+
+        allPosts.forEach(post -> {
+            log.info("Post Date {}", post.getDateCreated());
+        });
     }
 }
