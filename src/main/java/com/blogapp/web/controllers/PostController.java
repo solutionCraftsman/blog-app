@@ -3,6 +3,7 @@ package com.blogapp.web.controllers;
 import com.blogapp.data.models.Post;
 import com.blogapp.service.post.PostService;
 import com.blogapp.web.dto.PostDto;
+import com.blogapp.web.exceptions.PostDoesNotExistException;
 import com.blogapp.web.exceptions.PostObjectIsNullException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class PostController {
     @GetMapping("")
     public String getIndex(Model model)
     {
-        List<Post> postList = postService.findAllPosts();
+        List<Post> postList = postService.findPostsInDescOrder();
         model.addAttribute("postList", postList);
 
         return "index";
@@ -75,4 +76,37 @@ public class PostController {
         model.addAttribute("postDto", new PostDto());
     }
 
+    @GetMapping("/view")
+    public String viewPost(@RequestParam(name = "postId") Integer postId, Model model)
+    {
+        log.info("Post Id --> {}", postId);
+
+        try {
+            Post post = postService.findById(postId);
+            model.addAttribute("post", post);
+            log.info("Post Object --> {}", post);
+        }
+        catch (PostDoesNotExistException e) {
+            return "redirect:/posts";
+        }
+
+        return "post";
+    }
+
+    @GetMapping("/info/{postId}")
+    public String getPostDetails(@PathVariable(name = "postId") Integer postId, Model model)
+    {
+        log.info("Request for a post path --> {}", postId);
+
+        try {
+            Post savedPost = postService.findById(postId);
+            model.addAttribute("postInfo", savedPost);
+            log.info("Post Object --> {}", savedPost);
+        }
+        catch (PostDoesNotExistException e) {
+            return "redirect:/posts";
+        }
+
+        return "post";
+    }
 }

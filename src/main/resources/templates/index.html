@@ -37,7 +37,7 @@
 
     </header>
     <!-- Header section end -->
-</div>
+    </div>
 
     <!--    Blog post-->
     <div id="blog" class="blog-post-container">
@@ -64,7 +64,8 @@
             <div class="post-content">
                 <p th:text="${post.content}"></p>
             </div>
-            <a href="/asset/pages/post.html">
+<!--            <a th:href="@{/posts/view(postId=${post.id})}">-->
+            <a th:href="@{/posts/info/{postId}(postId=${post.id})}">
                 <button class="view-post">
                     continue reading
                 </button>

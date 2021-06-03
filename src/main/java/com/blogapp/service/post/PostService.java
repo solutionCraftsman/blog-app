@@ -3,6 +3,7 @@ package com.blogapp.service.post;
 import com.blogapp.data.models.Comment;
 import com.blogapp.data.models.Post;
 import com.blogapp.web.dto.PostDto;
+import com.blogapp.web.exceptions.PostDoesNotExistException;
 import com.blogapp.web.exceptions.PostObjectIsNullException;
 
 import java.util.List;
@@ -13,9 +14,11 @@ public interface PostService {
 
     List<Post> findAllPosts();
 
+    List<Post> findPostsInDescOrder();
+
     Post updatePost(PostDto postDto);
 
-    Post findById(Integer id);
+    Post findById(Integer id) throws PostDoesNotExistException;
 
     void deletePostById(Integer id);
 
